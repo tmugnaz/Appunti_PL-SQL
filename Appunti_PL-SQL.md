@@ -1,7 +1,10 @@
 # PL/SQL
 ---
 ---
-## LEZIONE 1 (SEZIONE 4) BASI DI SQL , BLOCCHI E VARIABILI
+## LEZIONE 1  BASI DI SQL , BLOCCHI E VARIABILI
+---
+(SEZIONE 4)
+
 ---
 ### INTRODUZIONE
 
@@ -217,7 +220,48 @@ Ovviamente l'etichetta del blocco annidiato **NON** esisterà per il blocco Prin
 
 ---
 ---
+## LEZIONE 2 
+---
+(SEZIONE 5)
 
+---
+### GESTIONE DELLE TRANSAZIONI
+---
+Nel caso di errori durante l'esecuzione di blocchi di codice è necessario poter tornare indietro : per questo esiste il comando **ROLLBACK**
+che permette di riportare il db all'ultimo salvataggio , scartando così le modifiche fatte in precedenza 
+```sql
+ROLLBACK;
+```
+Ma cosa si intende per modifica?
 
+Ogni comando appartenente alla famiglia DML (Data Manipulation System) è considerato una modifica al DB (i metodi CRUD)
+e ogni tipo di modifica è considerato **SOTTO TRANSAZIONE** ovvero finche il comando non viene accettato del tutto i cambiamenti sono salvati in una __memoria temporanea__ per preservare l'integrità del DB.
 
+Non è infatti l'utente base a decidere ma la logica del programma decide se accettare o scartare le modifiche fatte dall'utente.
+
+Gli utenti esterni infatti saranno in grado di modificare il db e i suoi dati ma non riusciranno a vedere le modifiche che hanno apportato , non finchè la transazione non sarà chiusa e il risultato confermato o ribaltato 
+
+```sql
+COMMIT;
+```
+Comando per accettare tutti i cambiamenti , proprio come in GIT;
+
+IL COMMIT è PERMANENTE
+
+```sql
+SAVEPOINT a ;
+```
+È un checkpoint che salva le modifiche (NON è UN COMMIT), e serve come punto di riferimento per i successivi commit o rollback;
+
+Il rollback infatti puo referenziare un savepoint scartando tutte le modifiche successive al savepoint
+<center>OPERAZIONE</center>
+<center> ⬇</center>
+<center>SAVEPOINT 'X'</center>
+<center>⬇</center>
+<center>MORE WORK</center>
+<center> ⬇</center>
+<center>COMMIT OR ROLLBACK TO SAVEPOINT 'X'</center>
+
+---
+---
 
