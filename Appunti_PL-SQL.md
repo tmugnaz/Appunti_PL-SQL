@@ -388,3 +388,123 @@ Molto utile è anche il comando EXIT che serve per Uscire completamente da un ci
 
 ---
 ---
+## LEZIONE 5: GESTIONE DELLE ECCEZIONI
+---
+(SEZIONE 8)
+
+---
+### TIPI DI ECCEZIONI
+
+Nel PL/SQL è importante gestire le Eccezioni sopratutto nei contesti dove stiamo modificando dei dati e c'è il rischio che il processo venga interrotto da una o più eccezioni.
+
+Le Eccezioni che possiamo trovare sono di due tipologie 
+
+- Eccezioni Predefinite 
+- Eccezioni Definite dall'Utente
+
+Le Predefinite sono Eccezioni di base se così possiamo dire, errori comuni relativi a operazioni con i dati :
+
+* `NO_DATA_FOUND`: Quando una query non trova alcun dato.
+* `TOO_MANY_ROWS`: Quando una query restituisce più di una riga per un'operazione di singola riga.
+* `ZERO_DIVIDE`: Quando si tenta di dividere per zero. 
+
+Ogni qualvolta pensiamo di aver a che fare con un operazione che potrebbe lanciare un eccezione è necessario gestirla del blocco `EXCEPTION`:
+
+```sql
+EXCEPTION 
+    WHEN NO_DATA_FOUND THEN 
+    DBMS_OUTPUT.PUT_LINE('Nessun dato trovato.');
+END;
+```
+Non è considerata buona norma cercare di gestire queste eccezioni di base tramite il "CASE": 
+`WHEN OTHERS THEN` che lancia l'azione descritta quando incorre in una o più eccezioni senza specificarne il tipo.
+
+---
+
+### ECCEZIONI DEFINITE DALL'UTENTE
+
+Sono le eccezioni principali con cui andremo a lavorare : possiamo creare un eccezione per qualsiasi tipologia di caso o errore e gestirla in maniera opportuna.  
+Possiamo considerare il blocco BEGIN END come un TRY  e il EXCEPTION WHEN come il nostro CATCH
+
+```sql
+BEGIN 
+--codice che può generare errori
+EXCEPTION 
+-- gestione degli errori
+END ;
+```
+Possiamo generare noi un messaggiodi errore tramite la clausola RAISE 
+es:
+```sql
+EXCEPTION 
+WHEN NO_DATA_FOUND THEN 
+RAISE_EXCEPTION_ERROR(-20000,'ERRORE')
+```
+in questo caso nel dump di errore visualizzeremo il codice e il messaggio, i codici personalizzati dovranno sempre avere un valore compreso tra -20k e -20999
+```sql
+DECLARE
+   v_num NUMBER := 0;
+BEGIN
+   -- Tentativo di accesso a una tabella inesistente
+   SELECT col INTO v_num FROM non_existent_table;
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Errore: ' || SQLERRM);
+END;
+```
+
+Il comando SQLCODE è una funzione che fornisce il codice di stato dell'ultima operazione (solitamente l'errore)
+mentre  SQLERRM restituisce il messaggio di errore completo associato all'errore corrente 
+
+Entrambi questi comandi servono per fornire  informazioni piu dettagliate per migliorare la diagnosi dell'errore.
+#### PROPAGAZIONE DEGLI ERRORI
+Nei blocchi annidiati è possibile gestiglie di errori del blocco secondario SIA all'interno dello stesso sia all'interno di quello primario poichè la visibilità della gestione è uguale a quella delle variabili dichiarate nei blocchi annidiati
+
+---
+
+#### DICHIARAZIONE E GESTIONE
+Possiamo Dichiarare le eccezioni proprio come se fossero variabili
+
+```sql
+DECLARE
+   my_exception EXCEPTION;
+BEGIN
+   IF condition THEN
+      RAISE my_exception;
+   END IF;
+EXCEPTION
+   WHEN my_exception THEN
+      DBMS_OUTPUT.PUT_LINE('Eccezione generata.');
+END;
+
+```
+Posso anche utilizzare il RAISE_EXCEPTION_ERROR(codiceErrore,messaggio)
+ma se gestito nel "EXCEPTION WHEN OTHERS" necessiterò di stampare a schermo SQLERRM per visualizzare il codice
+
+**COMANDO PRAGMA**
+Possiamo sovrascrivere le eccezioni di base con codici e messaggi personalizzati tramite il comando pragma:
+
+```sql
+DECLARE
+E_IdInvalido EXCEPTION;
+
+PRAGMA EXCEPTION_INIT(E_IdInvalido,-20001);
+```
+in questo caso quando andremo a incontrare la possibilità che il codice lanci l'eccezione che vogliamo gestire allora possiamo 
+```sql
+IF condizione che puo generare errore THEN 
+-- in questo caso NO_DATA_FOUND
+RAISE_APPLICATION_ERROR (-20001, 'id non valido');
+```
+e quando andremo a gestire gli errori possiamo 
+```sql
+WHEN E_IdInvalido 
+    THEN
+       DBMS_OUTPUT.PUT_LINE (SQLERRM);
+       DBMS_OUTPUT.PUT_LINE (SQLCODE);
+```
+Ovvero se incontreremo quell'errore abbiamo la possibilità di aggiungere informazioni per rendere la diagnosi più facile.
+È utile pe rgestire errori generici NON tramite il EXCEPTION WHEN OTHERS
+
+---
+---
