@@ -508,3 +508,160 @@ Ovvero se incontreremo quell'errore abbiamo la possibilità di aggiungere inform
 
 ---
 ---
+## LEZIONE 6: I CURSORI 
+---
+(SEZIONE 9)
+
+---
+Servono per eseguire Query e Lavorarci in maniera Iterativa
+lavorando su un recordSet UNA RIGA ALLA VOLTA
+
+ce ne sono di due tipi:
+
+* ESPLICITI → Definiti dall'utente
+* IMPLICITI → Creati automaticamente 
+
+La dichiarazione del cursore equivale alla dichiarazione di un nuovo tipo di dato che contiene i recordset proventienti da una query personalizzata
+```sql
+DECLARE 
+CURSOR c_name IS
+    SELECT *
+    FROM tabella 
+--conterrà i risultati della query
+```
+Altra parte fondamentale è apertura e chiusura del Cursore (altrimenti rischia di occupare troppa memoria)  
+IL flusso di esecuzione è così
+<center>
+OPEN cursore 
+
+↓ 
+
+FETCH --accedere ai dati
+
+↓
+
+CLOSE cursore
+</center>
+
+I cursori Impliciti vengono generati automaticamente con le Query DML e i comandi SELECT X INTO.  
+Apertura e Chiusura vengono gestiti automaticamente 
+
+---
+### CURSORI ESPLICITI DICHIARAZIONI E CICLI
+È possibile utilizzare i cursori tramite i cicli per ottere le informazioni dalla tabella selezionata
+
+*Esempio LOOP semplice*
+
+```sql
+DECLARE
+   CURSOR my_cursor IS
+      SELECT employee_id, first_name, last_name
+      FROM employees
+      WHERE department_id = 100;
+   -- Dichiarazione di variabili per memorizzare i risultati del cursore
+   v_employee_id employees.employee_id%TYPE; --con anchor
+   v_first_name employees.first_name%TYPE;
+   v_last_name employees.last_name%TYPE;
+BEGIN
+   -- Apertura del cursore
+   OPEN my_cursor;
+   
+   -- Recupero e elaborazione dei dati tramite cursore in un loop
+   LOOP
+      -- Fetch dei dati dal cursore nel blocco LOOP
+      FETCH my_cursor INTO v_employee_id, v_first_name, v_last_name;
+      
+      -- Uscita dal loop quando non ci sono più righe da leggere
+      EXIT WHEN my_cursor%NOTFOUND;
+      
+      -- Elaborazione dei dati recuperati
+      DBMS_OUTPUT.PUT_LINE('Employee ID: ' || v_employee_id || ', Name: ' || v_first_name || ' ' || v_last_name);
+   END LOOP;
+   
+   -- Chiusura del cursore
+   CLOSE my_cursor;
+END;
+```
+in questo caso possiamo vedere come operare con i cursori tramite i cicli, punti fondamentali sono :
+
+* dichiarazione delle variabili dove il cursore associerà i valori della query
+* apertura e fetch (associazione) dei valori 
+* caso di uscita del loop con attributo del cursore (spiegato piu avanti)
+* chiusura del cursore
+* 
+*Esempio ciclo While*
+```sql
+DECLARE 
+CURSOR my_cursor IS 
+      SELECT colonna FROM tabella WHERE condizione;
+
+v_cursor my_cursor%ROWTYPE --dichiarazione di una variabile del tipo esatto del cursore in modo da avere in una variabile tutti i campi che il cursore puo riempire 
+
+BEGIN 
+  OPEN my_cursor;
+
+   -- Ciclo WHILE per iterare sui risultati del cursore
+   WHILE TRUE LOOP
+      -- Recupero dei dati dal cursore
+      FETCH my_cursor INTO v_cursor
+
+      -- Uscita dal ciclo quando non ci sono più righe da leggere
+      EXIT WHEN my_cursor%NOTFOUND;
+
+      -- Elaborazione dei dati recuperati
+      DBMS_OUTPUT.PUT_LINE(v_cursor.CAMPO, v_cursor.CAMPO2 ETC)
+   END LOOP;
+
+   -- Chiusura del cursore
+   CLOSE my_cursor;
+END;
+```
+In questo caso la variabile di tipo cursore immagazina all'interno i campi che il cursore associa ad ogni loop
+
+*Esempio ciclo FOR*
+```sql
+DECLARE
+   -- Dichiarazione del cursore
+   CURSOR emy_cursor IS
+      SELECT *
+      FROM tabella
+      WHERE condizione;
+
+  v_cur my_cursor%ROWTYPE; --dichiarazione variabile di tipo cursore;
+BEGIN
+   -- Ciclo FOR per iterare sui risultati del cursore
+   FOR v_cursor IN my_cursor LOOP
+      -- Elaborazione dei dati recuperati direttamente dall'iterazione del cursore
+      DBMS_OUTPUT.PUT_LINE(v_cursor.Campo);
+   END LOOP;
+
+   -- Il cursore viene automaticamente chiuso alla fine del ciclo FOR
+END;
+```
+Unico caso in cuinon possiamo far riferimento alle righe ciclate tramite il `%ROWCOUNT`
+
+
+Esiste anche l'utilizzo del CURSOR FOR UPDATE:  
+Consente di recuperare e bloccare le righe di una tabella all'interno di un cursore in modo che possano essere modificate. Questo tipo di cursore è utile quando si desidera leggere e successivamente aggiornare o eliminare le righe selezionate senza il rischio di conflitti di concorrenza con altre sessioni.   
+
+Infatti le righe influenzate saranno sottoposte ad un **LOCK IN** → altri utenti del DB non potranno accerderci finche la procedura non sarà finita in modo da garantire l'integrità dei dati durante l'operazione
+
+È importante ricordare che questo LOCK sarà presente fin quando il cursore è aperto E finchè non ci sarà un comando di COMMIT o ROLLBACK.  
+Stare quindi molto attenti poichè può causare problemi di prestazioni 
+
+---
+### ATTRIBUTI DEI CURSORI
+
+Ovviamente è importante la gestione degli errori, per questo utilizziamo in entrambi i casi la clausola %NOTFOUND che serve per fare un check se il cursore sta puntando a null ( la tabella è finita);
+
+proprio per casi come questo esistono gli attributi dei cursori :
+
+| Attributo    | Descrizione                              | 
+|--------------|------------------------------------------|
+| `%NOTFOUND`  | Restituisce `TRUE` se il cursore non ha più righe da leggere. | 
+| `%FOUND`     | Restituisce `TRUE` se il cursore ha ancora righe da leggere. | 
+| `%ROWCOUNT`  | Restituisce il numero di righe lette finora dal cursore. | 
+| `%ISOPEN`    | Restituisce `TRUE` se il cursore è aperto. | 
+
+---
+---
