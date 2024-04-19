@@ -110,7 +110,7 @@ P_NomeNuovoCliente CLIENTE.NOME%TYPE := '&Nome';
 ```  
 Questo risulterà in un prompt all'avvio del blocco di codice dove l'utente avrà modo di inserire il nome scelto. Una volta fatto ciò per tutta la durata dell'esecuzione del codice quella variabile avrà quel valore.
 
-![alt text](image.png)
+![alt text](IMGS/image.png)
  
 se nel blocco inseriamo anche il comando 
 
@@ -121,9 +121,9 @@ dbms_output.put_line('il nome del cliente è: ' || p_NomeNuovoCliente);
 END;
 ```  
 ci troveremo nell'output DBMS proprio il nome che abbiamo scritto 
-![alt text](image-1.png)
+![alt text](IMGS/image-1.png)
 
-![alt text](image-2.png)
+![alt text](IMGS/image-2.png)
 
 ---
 ### MANIPOLAZIONE DELLE VARIABILI
@@ -264,4 +264,68 @@ Il rollback infatti puo referenziare un savepoint scartando tutte le modifiche s
 
 ---
 ---
+## LEZIONE 3 
+---
+(SEZIONE 6)
 
+---
+### ESPRESSIONI CONDIZIONALI
+---
+Come in tutti i linguaggi di programmazione le espressioni condizionali sono una parte fondamentale del flusso del codice per eseguire determinate azioni quando una condizione è vera e altre azioni quando è falsa.
+
+In PL/SQL sono :
+
+* **IF THEN ELSE** 
+  
+  questa la sintassi:
+
+```sql
+IF (condizione) THEN Azione1
+ELSE IF (condizione2) THEN Azione2
+ELSE  (Condizione implicita) 
+      Azione 3
+END IF;      
+``` 
+* **CASE** 
+
+  Viene utilizzato per selezionare opzioni diverse in base ad un valore specifico (il SELETTORE)
+
+
+```sql
+CASE (Selettore)
+WHEN (opzione1) THEN (azione1)
+WHEN (opzione2) THEN (azione2)
+ELSE (azione di base)
+END CASE;
+```
+* COALESCE usato per restituire il *Primo* valore NON nullo di una lista di valori 
+```sql
+COALESCE (V1,V2,V3...Vn);
+```
+* SEARCHED CASE espressione avanzata del CASE per valutare più condizioni contemporaneamente non c'è quindi bisogno del selettore perla clausola CASE
+```sql
+CASE 
+WHEN (condizione1)THEN azione1
+WHEN (condizione2)THEN azione2
+WHEN (condizione3)THEN azione3
+END CASE;
+```
+* NULLIF  restituisce NULL se due valori sono uguali e altrimenti restituisce il PRIMO Valore 
+```sql
+NULLIF (V1,V2)
+```
+* NVL serve per "riempire" il valore nullo in una colonne (se trovato) con un valore da noi stabilito. Serve per eseguire funzioni matematiche su colonne che sappiamo potrebbero avere valori nulli.
+```sql
+NVL(SPESA,0);
+```
+È Anche possibile avere più condizioni una annidiata all'interno dell'altra 
+```sql
+IF condizione THEN 
+      IF condizione THEN azione
+      ELSIF condizione THEN azione
+      ELSE azione
+      END IF;
+ELSIF condizione 
+ELSE azione 
+END IF;      
+```
