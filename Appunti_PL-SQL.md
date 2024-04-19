@@ -665,3 +665,164 @@ proprio per casi come questo esistono gli attributi dei cursori :
 
 ---
 ---
+## LEZIONE 7 : COLLEZIONI
+---
+(SEZIONE10)
+
+---
+### TIPI DI COLLEZIONI 
+
+Le Collezioni o COLLECTION in inglese sono degli insiemi che raggrupano diversi tipi di dati come tabelle, array etc e sono molto utili per elaborare grandi quantità di dati
+
+Ne esistono diversi tipi:
+* TABELLE INDICIZZATE
+* ARRAY ASSOCIATIVI
+* EMBEDED TABLE
+* VARRAY
+* RECORD
+ 
+#### TABELLE INDICIZZATE
+
+Sono tabelle riempite solitamente da un cursore a cui per ogni riga viene associato un index che ci permette di scorrerle in maniera efficiente sono quindi **COLLEZIONI ORDINATE DI ELEMENTI** e si creano tramite la sintassi:
+
+```sql
+TYPE nomeTabella IS TABLE OF VARCHAR(100) INDEX BY PLS_INTEGER;
+--dichiarazione tabella
+V_tabella nomeTabella;
+-- variabile di tipo nomeTabella
+V_index PLS_INTEGER := 0;
+--variabile index
+
+CURSOR my_cursor IS
+    ( SELECT NOME
+    FROM CLIENTI; )
+-- creo un cursore per prender ei nomi dei vari clienti
+v_cursor my_cursor%ROWTYPE ;
+-- variabile di tipo cursore
+
+BEGIN
+ OPEN my_cursor
+ FOR my_cursor in v_cursor
+ LOOP
+ v_index := v_index+1; --aumento valore cursore
+ v_tabella(v_index):= v_cursor.NOME --associo al posto in posizione index il valore della variabile cursore 
+ END LOOP;
+
+WHILE v_index IS NOT NULL --ciclo sugli indici della tabella per scorrerla 
+LOOP
+ dbms_output.put_line( 'v_tabella.nome'); --stampo i valori in quella posizione 
+END LOOP;
+EXCETPION WHEN --gestione errori
+END;
+```
+In questo esempio abbiamo ussato un cursore e una variabile indice per riempire ed associare ad ogni riga riempita un valore per poi elaborare i dati tramite un semplice ciclo while.
+
+Le tabelle associative ci permettono di lavorare anche con metodi che si basano sul loro indice:
+* .first → indica la prima riga 
+  
+  `v_tabella(v_tabella.first)`
+* .last → indica l'ultima riga
+  
+  `v_tabella(v_tabella.first)`
+* .count → conta il totale delle righe
+  
+  `if v_tabella.count < X `
+* .next→ per passare al valore successivo dell'indice 
+---
+#### ARRAY ASSOCIATIVO
+È molto simile alla Tabella ma invece che un INDEX avremo una chiave che può essere di qualsiasi tipologia di dato
+```sql
+DECLARE 
+  TYPE nomeArray is TABLE OF VARCHAR(100) INDEX BY NUMBER 
+  v_array nomeArray;
+  v_codice NUMBER
+
+  --creo cursore 
+  CURSOR my_cursor  IS 
+      SELECT NOME, CODICE FROM
+      CLIENTI;
+
+ v_cursor my_cursor%ROWTYPE;
+
+ BEGIN
+ FOR v_cursor in my_cursor
+ LOOP
+ v_array(r_cursor.CODICE):= r_cursor.NOME
+ END LOOP;
+ --Associo ad ogni valore in posizione codice il corrispondente nome
+ v_codice := v_array.first;
+ -- CODICE diventa quindi CHIAVE del NOME corrispondente
+WHILE v_codice IS NOT NULL
+LOOP
+dbms_output.put_line( 'il nome :' || v_array(v_codice)|| 'è associato al codice  ' || v_codice)
+v_codice := v_array.next(v_codice);
+END LOOP;
+
+```
+In questo esempio creiamo la variabile codice e associamo il valore di index del privo valore della tabella per poi andare a scorrerlo tramite il .next
+
+---
+#### EMBEDDED TABLE
+serve a create tabelle dentro tabelle, Collezioni di elementi dello stesso tipo di dati è moltopiu flessibile grazie ai comandi come extend
+
+```sql
+DECLARE
+    CURSOR c_clienti 
+    IS
+        SELECT NOME FROM CLIENTI;
+
+--DEFINIZIONE DI UNA NESTED TABLE DI TIPO VARCHAR
+TYPE nominativo_type IS TABLE OF VARCHAR2(100);
+
+--DICHIARAZIONE DELLA VARIABILE E INIZIALIZZAZIONE
+nominativo_tab nominativo_type := nominativo_type();
+
+v_index PLS_INTEGER := 0;
+
+BEGIN
+FOR r_clienti IN c_clienti
+    LOOP
+        v_index := v_index + 1;
+        
+        nominativo_tab.EXTEND;
+        nominativo_tab(v_index) := r_clienti.Nome;
+    END LOOP;
+    
+    nominativo_tab.EXTEND;
+    nominativo_tab(v_index+1) := 'IL MIO NOME';
+```
+L'inizializzazione della variabile tabella è seguita dal tipo della tabella +(); come sefosse un costruttore.
+
+ci appare quindi chiara la duttilità di questa struttura dati capace di aggiungere record al proprio in terno grazie al comando EXTEND.
+Ma non è l'unico comando che possiamo usare, abbiamo anche :
+* add → aggiunge l'elemento specificato successivamente in ultima posizione è un extend+insert insieme 
+* delete → cancella elemento nella posizione specificata
+* count → conta il numero di righe nella tabella
+* exist → check se la posizione specificata esiste o meno
+* extend(n) → aggiunge n posizioni alla tabella
+---
+#### VARRAY , Variable size ARRAY
+
+un array con un numero di elementi prestabilito 
+```sql
+DECLARE 
+-- creo cursore 
+CURSOR my_cursor IS 
+  SELECT NOME FROM CLIENTI;
+
+-- creo VARRAY
+ TYPE VARRAY ID VARRAY(X) OF VARCHAR(100);
+ v_varray VARRAY(); --stessa inizializzazione della embedded table
+ v_index PLS_INTEGER := 0;
+ BEGIN
+ FOR v_cusror IN my_cursor
+ LOOP
+ v_index := v_index+1;
+ v_varray.extend; --aumento la dimensione
+ v_varray(v_index):= v_cursor.nome; --associo alla posizione il contenuto del cursore
+ END LOOP
+```
+Se provo ad inserire un dato in posizione v_varray.lenght+1 mi darà sicurament errore
+
+---
+---
