@@ -975,3 +975,84 @@ Le funzioni sono utilizzate per calcolare e restituire valori specifici e posson
 ---
 ---
 
+## LEZIONE 11 : I TRIGGER
+---
+(SEZIONE 14)
+
+---
+I trigger sono blocchi di codice che andranno ad esegursi in automatico al CHECK di una determinata condizione, e reagiscono a eventi di tipo DML O DDL.
+
+esistono i 
+* TRIGGER DI RIGA
+* TRIGGER DI TABELLA
+* TRIGGER DI ISTRUZIONE
+* 
+E tutti possono distinguersi dal tempismo dell'attivazione : prima o dopo il completamento dell'evento di trigger.
+
+```sql
+CREATE OR REPLACE TRIGGER trigger_name
+BEFORE / AFTER --tempismo di esecuzione
+{DML} ON Tabella --Qualsiasi create delete etc
+[FOR EACH ROW] -- specifia opzionale 
+BLOCCO DI CODICE --corpo del trigger 
+```
+Esitono anche delle variabili che possono essere usate con i TRIGGER
+
+**:NEW** e **:OLD**
+Sono specifiche per accedere ai date precedenti o successivi ad una data operazione DML.
+
+Normalmente sono associati ad alias che vanno dichiarati con `REFERENCING OLD AS O , NEW AS N`
+
+Esempio:
+```sql
+CREATE TRIGGER R
+BEFORE INSERT ON Tabella T
+FOR EACH ROW
+BEGIN 
+:NEW.CAMPO = Y
+:NEW.CAMPO2 = X
+END;
+```
+questo codice ad esempio è un trigger che si attiva quando andiamo ad inserire nella tabella T e serve a settare a dei valori standard dei campi che l'utente non inserisce personalmente (ES. Data creazione etc)
+
+Abbiamo anche la possibilità di utilizzare delle condizioni come ad esempio:
+```sql
+IF INSERTING THEN --si attiva quando il comandi dml è di inserzione
+IF DELETING THEN--si attiva quando il comandi dml è di delezione
+IF UPDATING(CAMPO) THEN --si attiva quando il comandi dml è di update su un campo specifico della tabella 
+IF UPDATING THEN -- update su tabella ma non specificato il campo → funziona su tutti i campi
+WHEN condizione --specifica quando deve attivarsi
+```
+Uno dei possibili utilizzi è quello di controllo e possiamo andare a impedire l'update di certi campi di una tabella 
+
+Esempio
+```sql
+CREATE TRIGGER T
+BEFORE UPDATE OF CAMPO  C ON TABELLA T
+BEGIN 
+  RAISE_APPLICATION_ERROR(-20000,'Non è possibile Modificare');
+END;
+```
+Questo trigger andrà a bloccare l'esecuzione di qualsiasi update del campo C 
+
+possiamo anche andare a reagire alle modifiche delle VISTE( QUERY salvate piu semplici e di utilizzo):
+```sql
+-- Creo una vista
+CREATE VIEW my_view AS
+SELECT *
+FROM table
+WHERE scrivania_id = 30;
+
+-- Creazione di un trigger INSTEAD OF per gestire l'inserimento dei dati tramite la vista
+CREATE OR REPLACE TRIGGER my_view_insert_trigger
+INSTEAD OF INSERT ON my_view
+REFERENCING NEW AS N
+FOR EACH ROW
+BEGIN
+    -- Esegui l'operazione di inserimento nella tabella sottostante
+    INSERT INTO table (id, nome ,codice,scrivania_id)
+    VALUES(N.id, N.name, N.codice, 30);  
+END;
+```
+---
+---
