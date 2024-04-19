@@ -884,3 +884,47 @@ v_clienti clientiBest;
 ```
 ---
 ---
+## LEZIONE 9 : STORED PROCEDURE 
+Le procedure sono metodi con NOME che vengono salvati sul programma per essere riusati in seguito evitando duplicazione di codice e semplificando le azioni piu comuni.
+
+Si tratta di oggetti del linguaggio PL/SQL
+
+Scopo Principale:
+
+>Le stored procedure sono progettate per eseguire una serie di operazioni specifiche e possono essere utilizzate per eseguire compiti amministrativi, complessi o ripetitivi all'interno di un database.
+
+Ritorno di Valore:
+>Le stored procedure possono avere parametri di input e output, ma di solito non restituiscono un valore direttamente. Possono modificare lo stato del database, generare output tramite parametri di output o stampare messaggi di output.
+
+Utilizzo in SQL:  
+>Le stored procedure possono essere chiamate da altre procedure, funzioni o applicazioni client, e possono eseguire un insieme di istruzioni SQL complesse.
+
+Gestione Transazionale:
+>Le stored procedure possono essere utilizzate per avviare, eseguire e gestire transazioni complesse che coinvolgono più operazioni SQL.
+```sql
+
+CREATE OR REPLACE PROCEDURE UpdateEmployeeSalary(
+    emp_id IN NUMBER,
+    new_salary IN NUMBER
+) AS
+BEGIN
+    UPDATE employees
+    SET salary = new_salary
+    WHERE employee_id = emp_id;
+    COMMIT;  -- Esempio di gestione transazionale
+END;
+```
+I pramentri di `INPUT` devono essere specificati dalla keyword IN seguita dal tipo di valore.  
+I pramentri di `OUTPUT` devono essere specificati dalla keyword OUT seguita dal tipo di valore.
+
+Per richiamarla : 
+```sql
+EXEC UpdateEmployeeSalary(
+    emp_id NUMBER,
+    new_salary NUMBER)
+```
+I valori di INPUT possono essere settati a valori di DEFAULT nel caso non siano strettamente necessari.
+
+---
+---
+
