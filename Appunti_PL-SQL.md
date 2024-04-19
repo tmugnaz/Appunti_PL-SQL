@@ -1,13 +1,8 @@
 # PL/SQL
 ---
 ---
-## LEZIONE 1  BASI DI SQL , BLOCCHI E VARIABILI
+## INTRODUZIONE 
 ---
-(SEZIONE 4)
-
----
-### INTRODUZIONE
-
 PL sta per Procedural Language ed è quindi un linguaggio PROCEDURALE per applicazioni flessibili che garantisce strumenti per la gestione,manipolazione e analisi dei dati in un ecosistema Oracle DB
 
 È un linguaggio di ALTO LIVELLO che permette la creazione di: 
@@ -19,6 +14,11 @@ PL sta per Procedural Language ed è quindi un linguaggio PROCEDURALE per applic
 
 Consente la creazione di Tipi di dati personalizzati
 Il linguaggio PL/SQL serve a sviluppare procedure e funzioni **SOLO** in un DB Oracle ed è necessario per migliorare le prestazioni del DB.
+
+---
+## LEZIONE 1 : BASI DI SQL , BLOCCHI E VARIABILI
+---
+(SEZIONE 4)
 
 ---
 ### BLOCCHI DI CODICE 
@@ -220,12 +220,10 @@ Ovviamente l'etichetta del blocco annidiato **NON** esisterà per il blocco Prin
 
 ---
 ---
-## LEZIONE 2 
+## LEZIONE 2 : GESTIONE DELLE TRANSAZIONI
 ---
 (SEZIONE 5)
 
----
-### GESTIONE DELLE TRANSAZIONI
 ---
 Nel caso di errori durante l'esecuzione di blocchi di codice è necessario poter tornare indietro : per questo esiste il comando **ROLLBACK**
 che permette di riportare il db all'ultimo salvataggio , scartando così le modifiche fatte in precedenza 
@@ -264,12 +262,10 @@ Il rollback infatti puo referenziare un savepoint scartando tutte le modifiche s
 
 ---
 ---
-## LEZIONE 3 
+## LEZIONE 3 : ESPRESSIONI CONDIZIONALI
 ---
 (SEZIONE 6)
 
----
-### ESPRESSIONI CONDIZIONALI
 ---
 Come in tutti i linguaggi di programmazione le espressioni condizionali sono una parte fondamentale del flusso del codice per eseguire determinate azioni quando una condizione è vera e altre azioni quando è falsa.
 
@@ -319,6 +315,7 @@ NULLIF (V1,V2)
 NVL(SPESA,0);
 ```
 È Anche possibile avere più condizioni una annidiata all'interno dell'altra 
+
 ```sql
 IF condizione THEN 
       IF condizione THEN azione
