@@ -885,6 +885,10 @@ v_clienti clientiBest;
 ---
 ---
 ## LEZIONE 9 : STORED PROCEDURE 
+---
+(SEZIONE 12)
+
+---
 Le procedure sono metodi con NOME che vengono salvati sul programma per essere riusati in seguito evitando duplicazione di codice e semplificando le azioni piu comuni.
 
 Si tratta di oggetti del linguaggio PL/SQL
@@ -924,6 +928,49 @@ EXEC UpdateEmployeeSalary(
     new_salary NUMBER)
 ```
 I valori di INPUT possono essere settati a valori di DEFAULT nel caso non siano strettamente necessari.
+
+---
+---
+## LEZIONE 10 : FUNZIONI
+---
+(SEZIONE 13)
+
+---
+Sono blocchi di codice modulare RIUTILIZZABILI CON OUTPUT
+
+Esistiono sia funzioni di SISTEMA es ROUND(X)
+sia quelle Definite dall'utente ovvero metodi con output personalizzati.
+
+Scopo Principale:   
+Le funzioni sono progettate per restituire un valore calcolato basato su parametri di input specifici. Possono essere utilizzate per eseguire calcoli, eseguire query e restituire risultati specifici.
+
+Ritorno di Valore:
+
+Le funzioni restituiscono un singolo valore di ritorno tramite la clausola RETURN e possono essere utilizzate in istruzioni SQL per ottenere risultati.
+
+Utilizzo in SQL:
+
+Le funzioni possono essere chiamate direttamente in istruzioni SQL, come parte di una query SELECT, per calcolare valori e restituire risultati.
+Limitazioni:
+
+Le funzioni hanno alcune limitazioni rispetto alle stored procedure, ad esempio non possono modificare lo stato del database direttamente tramite DML (Data Manipulation Language) come UPDATE o DELETE senza utilizzare tecniche avanzate.
+
+```sql
+CREATE OR REPLACE FUNCTION GetEmployeeName(
+    emp_id IN NUMBER
+) RETURN VARCHAR2
+AS
+    v_emp_name VARCHAR2(100);
+BEGIN
+    SELECT first_name || ' ' || last_name
+    INTO v_emp_name
+    FROM employees
+    WHERE employee_id = emp_id;
+    RETURN v_emp_name;
+END;
+```
+
+Le funzioni sono utilizzate per calcolare e restituire valori specifici e possono essere incorporate direttamente nelle query SQL. La scelta tra stored procedure e funzioni dipende dalle esigenze specifiche dell'applicazione e dal tipo di operazioni che devono essere eseguite.
 
 ---
 ---
