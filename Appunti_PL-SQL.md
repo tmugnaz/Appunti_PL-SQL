@@ -1,4 +1,48 @@
 # PL/SQL
+![titolo](IMGS/titolo.png)
+---
+
+- [PL/SQL](#plsql)
+  - [](#)
+  - [INTRODUZIONE](#introduzione)
+  - [LEZIONE 1 : BASI DI SQL , BLOCCHI E VARIABILI](#lezione-1--basi-di-sql--blocchi-e-variabili)
+    - [BLOCCHI DI CODICE](#blocchi-di-codice)
+    - [VARIABILI PL/SQL](#variabili-plsql)
+    - [MANIPOLAZIONE DELLE VARIABILI](#manipolazione-delle-variabili)
+    - [BLOCCHI ANNIDIATI E SCOPE DELLE VARIABILI](#blocchi-annidiati-e-scope-delle-variabili)
+  - [LEZIONE 2 : GESTIONE DELLE TRANSAZIONI](#lezione-2--gestione-delle-transazioni)
+  - [LEZIONE 3 : ESPRESSIONI CONDIZIONALI](#lezione-3--espressioni-condizionali)
+  - [LEZIONE 4 : I CICLI](#lezione-4--i-cicli)
+  - [LEZIONE 5: GESTIONE DELLE ECCEZIONI](#lezione-5-gestione-delle-eccezioni)
+    - [TIPI DI ECCEZIONI](#tipi-di-eccezioni)
+    - [ECCEZIONI DEFINITE DALL'UTENTE](#eccezioni-definite-dallutente)
+      - [PROPAGAZIONE DEGLI ERRORI](#propagazione-degli-errori)
+      - [DICHIARAZIONE E GESTIONE](#dichiarazione-e-gestione)
+  - [LEZIONE 6: I CURSORI](#lezione-6-i-cursori)
+    - [CURSORI ESPLICITI DICHIARAZIONI E CICLI](#cursori-espliciti-dichiarazioni-e-cicli)
+    - [ATTRIBUTI DEI CURSORI](#attributi-dei-cursori)
+  - [LEZIONE 7 : COLLEZIONI](#lezione-7--collezioni)
+    - [TIPI DI COLLEZIONI](#tipi-di-collezioni)
+      - [TABELLE INDICIZZATE](#tabelle-indicizzate)
+      - [ARRAY ASSOCIATIVO](#array-associativo)
+      - [EMBEDDED TABLE](#embedded-table)
+      - [VARRAY , Variable size ARRAY](#varray--variable-size-array)
+  - [LEZIONE 8 : I RECORD](#lezione-8--i-record)
+    - [TIPI DI RECORD](#tipi-di-record)
+      - [TABLE BASED](#table-based)
+      - [CURSOR BASED](#cursor-based)
+      - [DEFINITO DALL'UTENTE](#definito-dallutente)
+  - [LEZIONE 9 : STORED PROCEDURE](#lezione-9--stored-procedure)
+  - [LEZIONE 10 : FUNZIONI](#lezione-10--funzioni)
+  - [LEZIONE 11 : I TRIGGER](#lezione-11--i-trigger)
+  - [LEZIONE 12 : I PACKAGE](#lezione-12--i-package)
+    - [SPEC E BODY](#spec-e-body)
+  - [LEZONE 13 : PROGRAMMAZIONE AD OGGETTI IN PL/SQL](#lezone-13--programmazione-ad-oggetti-in-plsql)
+    - [COSTRUTTORE](#costruttore)
+    - [CREAZIONE DI UN OGGETO](#creazione-di-un-oggeto)
+    - [GETTER E SETTER](#getter-e-setter)
+    - [METODI STATICI](#metodi-statici)
+
 ---
 ---
 ## INTRODUZIONE 
@@ -1106,5 +1150,142 @@ Una procedura pubblica può lanciare procedure private che possono a loro volta 
 nomeMetodo (input1)  
 nomeMetodo(input1, input2);
 
+---
+---
+## LEZONE 13 : PROGRAMMAZIONE AD OGGETTI IN PL/SQL
+(SEZIONE 16)
+
+---
+In PL/SQL, pur non essendo un linguaggio orientato agli oggetti (OOP) nel senso tradizionale come Java o Python, è comunque possibile implementare alcuni concetti di programmazione orientata agli oggetti utilizzando tecniche e pattern specifici. Sebbene PL/SQL sia principalmente un linguaggio di programmazione procedurale e dichiarativo, è possibile utilizzare le seguenti tecniche per avvicinarsi a un paradigma OOP:
+
+* Record (Tipo di Dati Composito):
+
+>PL/SQL supporta i record, che sono tipi di dati compositi simili a una struttura in altri linguaggi. Puoi utilizzare i record per definire e organizzare dati correlati in una singola entità.
+
+* Package (Raggruppamento di Procedure e Funzioni)
+
+>Puoi utilizzare i package in PL/SQL per organizzare logicamente le procedure e le funzioni correlate. I package consentono di creare moduli riutilizzabili e possono essere considerati un modo di raggruppare le funzioni e i dati correlati, simile a una classe in OOP.
+
+* Procedure e Funzioni
+>Sebbene le procedure e le funzioni in PL/SQL non abbiano il concetto di ereditarietà o polimorfismo come nelle classi degli oggetti, è possibile utilizzare le procedure e le funzioni per incapsulare la logica di business e rendere il codice più modulare e riusabile.
+* Incapsulamento e Astrazione
+>Puoi utilizzare i package per incapsulare e nascondere la complessità del codice PL/SQL. Ad esempio, puoi definire procedure e funzioni pubbliche all'interno di un package e mantenere i dettagli di implementazione privati.
+* Utilizzo di Oggetti SQL (Oggetti e Metodi)
+ 
+>PL/SQL supporta gli oggetti SQL che consentono di definire oggetti e metodi. Anche se questo non è completamente equivalente alla programmazione orientata agli oggetti in altri linguaggi, consente di incapsulare dati e logica all'interno di un'entità.
+
+Creaiamo un oggetto :
+```sql
+CREATE TYPE Cliente AS OBJECT (
+    Id NUMBER,
+    Nome VARCHAR(20),
+    CODICE NUMBER,
+    
+    MEMBER PROCEDURE P (INPUT1,INPUT2))
+    ISTANTIABLE NOT FINAL;
+CREATE TYPE BODY Cliente AS
+  MEMBER PROCEDURE P IS
+  BEGIN [corpo del metodo]
+  END;
+END P;
+```
+Come possiamo vedere questo oggetto Cliente ha degli attributi e dei comportamenteni ( metodi)
+
+ISTANTIABLE NOT FINAL significa che puoò essere istanziato e modificato creandone sottotitpi
+
+___
+
+### COSTRUTTORE
+
+Una delle cose necessarie però manca: IL CONSTRUTTORE
+
+Ovvero come instanziare un oggetto di quel tipo:
+
+```sql
+--All'interno dello SPEC
+CONSTRUCTOR FUNCTION Cliente ( tipi e nomi degli attributi IN ORDINE) RETURN SELF AS RESULT;
+-- All'interno del body 
+CONSTRUCTOR FUNCTION Cliente (tipi e nomi degli attributi IN ORDINE)
+RETURN SELF AS RESULT IS
+BEGIN
+        SELF.id := id;
+        SELF.nome := nome; -- il SELF è utilizzato per autoreferenziare l'istanza dell oggetto e per assegnagli un valore → come il this. in java
+        SELF.codice := salary;
+        RETURN;
+END Cliente;
+```
+È possibile inserire tra gli input dei metodi di un oggetto l'autoreferenza ovvero che andrà ad operare sui propri stessi attributi → `(SELF IN)`
+
+---
+### CREAZIONE DI UN OGGETO
+Per creare un oggetto è necessario seguire semplici passi 
+```sql
+DECLARE 
+clienteProva Cliente; --dichiarazione variabile
+BEGIN
+clienteProva := Cliente (1 , Carlo, 11); --creiamo un istanza utilizzando il costruttore
+dbms_output.put_line(' ' || clienteProva.Nome);
+END;
+```
+Possiamo anche specificare meno attributi se abbiamo fatto OVERLOADING del costruttore
+
+---
+### GETTER E SETTER 
+Non dobbiamo per forza specificare tutti gli attributi di un oggetto alla sua creazione, potremmo averne alcuni di default o altri che NON vogliamo essere noi ad inserire.   
+Vengono quindi in nostro aiuto i **GETTER** e **SETTER** ovver metodi specifici per associare e restituire attributi di un oggetto 
+```sql
+--nello SPEC dell?oggetto
+MEMBER FUNCTION GetNome return VARCHAR(20);
+MEMBER FUNCTION SetCodice (codice NUMBER);
+-- nel body
+MEMBER FUNCTION GetNome return VARCHAR(20) IS
+  BEGIN 
+  RETURN SELF.nome;
+  END;
+MEMBER FUNCTION SetNome (codice NUMBER ) IS
+  BEGIN
+  SELF.codice := codice;
+  END;  
+```
+---
+### METODI STATICI
+Sono metodi che non richiedono l'apertura dell'istanza di un oggetto per essere eseguiti→ Sempre Accessibili
+
+Esempio
+```sql
+-- nello SPEC
+STATIC FUNCTION GetNomeById (id_INPUT NUMBER ) RETURN VARCHAR(20);
+-- nel BODY
+STATIC FUNCTION GetNomeById (id NUMBER ) RETURN VARCHAR(20) IS
+  CURSOR C (id_INPUT IN NUMBER) IS
+    SELECT NOME 
+    FROM CLIENTI
+    WHERE ID = id_INPUT;
+v_nome VARCHAR(20)
+BEGIN
+  OPEN C (Id);
+  FETCH C INTO v_nome;
+
+  IF C%NOTFOUND THEN 
+    CLOSE C;
+    RETURN NULL;
+  ELSE 
+    CLOSE C;
+    RETURN v_nome;
+  END IF;
+
+  EXCEPTION 
+  WHEN OTHER
+  THEN
+    IF C%ISOPEN THEN
+    CLOSE C;
+    END IF;
+END GetNomeById;     
+```
+per richiamare questo metodo sarà sufficiente
+
+```sql
+Cliente.GetNomeById(X);
+```
 ---
 ---
