@@ -326,3 +326,65 @@ ELSIF condizione
 ELSE azione 
 END IF;      
 ```
+---
+---
+## LEZIONE 4 : I CICLI
+---
+(SEIONE 7)
+
+---
+Anche i Cicli sono parte essenziale del Controllo del Flusso e in PL/SQL si possono trovare diverse tipologie di ciclo:
+
+* **WHILE** :
+  
+  Check su una condizione e inizio del loop
+```sql
+WHILE (condizione) 
+LOOP
+Azione1
+Azione2
+Azione3
+END LOOP;
+```
+* **FOR** 
+  
+  Contatore viene definito tra due valori : da dove parte (inf) e fin dove deve arrivare (sup)con nel mezzo ai due valori 2 punti (..).
+  
+```sql
+FOR i IN 1..X
+LOOP
+  Azione che si ripeterà X volte 
+END LOOP;  
+```  
+* **LOOP SEMPLICE**
+
+  il più semplice dei cicli , IMPORTANTE specificare la condizione di uscita
+
+```sql
+LOOP
+azione1
+azione2
+EXIT WHEN condizione
+END LOOP;
+```
+---
+Il Comando CONTINUE è utilizzato all'interno dei cicli per interrompere l'iterazione corrente e passare alla successiva ;
+```sql
+DECLARE
+    v_counter NUMBER := 0; --contatore
+BEGIN
+    FOR i IN 1..5 LOOP
+        IF MOD(i, 2) = 0 THEN
+            -- Se i è pari, salta questa iterazione
+            CONTINUE;
+        END IF;
+        v_counter := v_counter + 1;
+    END LOOP;
+    --possiamo vedere che la variabile contatore è aumentata SOLO per i numeri dispari
+    DBMS_OUTPUT.PUT_LINE('Iterazione ' || i || ': Contatore = ' || v_counter)
+END;
+```
+Molto utile è anche il comando EXIT che serve per Uscire completamente da un ciclo data una certa condizione: usato molto spesso con un IF all'interno del ciclo, la sintassi è uguale a quella del CONTINUE.
+
+---
+---
