@@ -986,7 +986,7 @@ esistono i
 * TRIGGER DI RIGA
 * TRIGGER DI TABELLA
 * TRIGGER DI ISTRUZIONE
-* 
+  
 E tutti possono distinguersi dal tempismo dell'attivazione : prima o dopo il completamento dell'evento di trigger.
 
 ```sql
@@ -1054,5 +1054,57 @@ BEGIN
     VALUES(N.id, N.name, N.codice, 30);  
 END;
 ```
+---
+---
+## LEZIONE 12 : I PACKAGE 
+(SEZIONE 15)
+
+---
+Sono degli OGGETTI utilizzati per organizzare e raggruppare le funzioni 
+
+Si dividono in 2 parti:
+* SPEC o SPECIFICA 
+  >Dichiarazione di funzioni e ivariabili che potranno essere richiamate FUORI dal package è una collezione di Dichiarazioni di Funzioni, Procedure, Metodi e Costanti.
+* BODY 
+  >Implemetazione delle funzioni e procedure dichiarati nello SPEC, è possibile creare funzioni e metodi che però resteranno a visibilità privata al di fuori del package
+
+Vantaggi dei Package:
+- Incapsulamento
+- riutilizzo
+- Organizzazione logica
+- Variabili condivise
+- velocità 
+---
+### SPEC E BODY
+Spec
+```sql
+CREATE OR REPLACE PACKAGE P
+AS
+-Dichiarazione metodi → nome,tipo,input e output 
+-- SOLO LA FIRMA
+-Dichiarazione di Variabili
+END P;
+```
+Body
+```sql
+CREATE OR REPLACE BODY P
+AS
+  -Corpo dei metodi con la stessa firma nello SPEC 
+  CREATE FUNCTION/STOREPROCEDURE
+  BEGIN 
+  END ;
+- Metodi e variabili ausiliari che resteranno invisibili fuori dal package 
+END P;
+```
+Devono essere compilati o contemporaneamente o PRIMA SPEC poi BODY
+Per richiamarlo 
+`P.nome_Metodo(INPUT)`
+
+Una procedura pubblica può lanciare procedure private che possono a loro volta chiamare variabili private (appunto invisibili se non all'interno del package)
+
+È Presente l'**OVERLOADING** dei metodi all'interno di un PACKAGE basta dare la stessa firma ma diversi input allo stesso metodo.   
+nomeMetodo (input1)  
+nomeMetodo(input1, input2);
+
 ---
 ---
