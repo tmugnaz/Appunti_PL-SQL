@@ -826,3 +826,61 @@ Se provo ad inserire un dato in posizione v_varray.lenght+1 mi darà sicurament 
 
 ---
 ---
+## LEZIONE 8 : I RECORD
+---
+(SEZIONE 11)
+
+---
+### TIPI DI RECORD
+Servono a combinare dati differenti ma collegati da un'unica unità logica
+
+Ne esistono di 3 tipi:
+* Table based 
+* cursor based
+* Definiti dall'utente
+#### TABLE BASED
+È un record che contiene diversi CAMPI di tipo uguale alla Tabella di riferimento
+```sql
+DECLARE 
+V_nome TABELLA%ROWTYPE;
+--variabile che contiene valori dei tipi dei campi della tabella selezionata
+--procedo a riempire il record
+SELECT * INTO v_nome
+FROM TABELLA
+WHERE condizione;
+```
+È una struttura dati che consente di lavorare con dei dati non caricati da un cursore che neccessita di apertura e chiusura.
+
+---
+#### CURSOR BASED
+Lo abbiamo incontrato precedentemente è un record formato dai tipi di dato che il cursore andrà a leggere da una query
+```sql
+CURSOR cursore IS
+SELECT* FROM TABLE
+v_cursore cursore%ROWTYPE;
+FOR v_cursore in cursore 
+LOOP
+-- riempio il cursore 
+```
+---
+#### DEFINITO DALL'UTENTE
+I tipi dei dati che questo cursore puo contenere sono infatti definiti dall'utente
+```sql
+DECLARE 
+TYPE record IS RECORD( NOME VARCHAR(20),
+                       CODICE NUMBER);
+V_record record%rowtype;
+```
+
+È possibile avere anche diversi rcord combinati in quel caso si parla di 
+**COLLEZIONI DI RECORD**
+```sql
+DECLARE 
+TYPE miglioriClienti IS RECORD (NOME VARCHAR(20),CODICE NUMBER);
+
+TYPE clientiBest IS TABLE OF miglioriClienti INDEX BY PLS_INTEGER;
+v_index NUMBER :=0;
+v_clienti clientiBest;
+```
+---
+---
